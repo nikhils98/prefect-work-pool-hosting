@@ -24,4 +24,4 @@ def mean_and_median():
 
 
 if __name__ == "__main__":
-    mean_and_median()
+    mean_and_median.serve(name="deployment", cron="* * * * *")
