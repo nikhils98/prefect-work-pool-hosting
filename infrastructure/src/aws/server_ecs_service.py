@@ -64,7 +64,7 @@ class ServerEcsService:
             ],
         )
 
-        service = aws.ecs.Service(
+        self.service = aws.ecs.Service(
             prefix_name("server-ecs-service"),
             name=server_name,
             cluster=cluster.id,

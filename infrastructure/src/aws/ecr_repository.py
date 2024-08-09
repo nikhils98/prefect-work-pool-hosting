@@ -19,17 +19,19 @@ class EcrRepository:
             repository=self.repo.name,
             policy=json.dumps(
                 {
-                    "rules": {
-                        "rulePriority": 1,
-                        "description": "Expire older images",
-                        "selection": {
-                            "tagStatus": "tagged",
-                            "tagPatternList": ["mean_and_median*"],
-                            "countType": "imageCountMoreThan",
-                            "countNumber": 20,
-                        },
-                        "action": {"type": "expire"},
-                    }
+                    "rules": [
+                        {
+                            "rulePriority": 1,
+                            "description": "Expire older images",
+                            "selection": {
+                                "tagStatus": "tagged",
+                                "tagPatternList": ["mean_and_median*"],
+                                "countType": "imageCountMoreThan",
+                                "countNumber": 20,
+                            },
+                            "action": {"type": "expire"},
+                        }
+                    ]
                 }
             ),
         )

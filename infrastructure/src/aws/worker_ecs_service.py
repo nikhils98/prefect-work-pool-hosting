@@ -12,10 +12,10 @@ class WorkerEcsService:
         self,
         cluster: aws.ecs.Cluster,
         execution_role: aws.iam.Role,
-        prefect_server_service: aws.ecs.Service,
+        server: aws.ecs.Service,
     ):
-        flow = config.require_object("flows")[0]
-        server_host = config.require_object("worker")["server_host"]
+        flow = "mean_and_median"
+        server_host = "http://localhost"
 
         worker_name = prefix_name("worker")
 
@@ -55,5 +55,5 @@ class WorkerEcsService:
             scheduling_strategy="DAEMON",
             launch_type="EC2",
             task_definition=task_def.arn,
-            opts=pulumi.ResourceOptions(depends_on=[prefect_server_service]),
+            opts=pulumi.ResourceOptions(depends_on=[server]),
         )

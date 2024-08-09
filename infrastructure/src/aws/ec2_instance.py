@@ -101,15 +101,15 @@ class Ec2Instance:
             ip_protocol="-1",
         )
 
-        ami_id = "ami-0504881b6db750d2f"  # ubuntu-server-22-arm for t4g instances
+        ec2_config = config.require_object("ec2")
 
         ec2_name = prefix_name("ec2")
         self.instance = aws.ec2.Instance(
             ec2_name,
             tags={"Name": ec2_name},
             instance_type=aws.ec2.InstanceType.T4G_SMALL,
-            ami=ami_id,
-            key_name=config.require("ec2_key_pair"),
+            ami=ec2_config["ami_id"],
+            key_name=ec2_config["key_pair"],
             user_data=user_data,
             iam_instance_profile=instance_profile.name,
             vpc_security_group_ids=[self.security_group.id],
