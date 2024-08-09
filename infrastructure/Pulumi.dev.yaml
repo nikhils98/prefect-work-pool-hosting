@@ -1,3 +1,8 @@
 encryptionsalt: v1:s7tYNHBszmI=:v1:/O9w3MOY6BxtCfLR:9JzGDJfRSnpq4Jr5ybyhsVbEqh0OwA==
 config:
   aws:region: me-south-1
+  prefect-work-pool-hosting-demo:ec2:
+    key_pair: <key_pair>
+    ami_id: <ami_id>
+  prefect-work-pool-hosting-demo:public_subnet_id: <subnet_id>
+  prefect-work-pool-hosting-demo:vpc_id: <vpc_id>
