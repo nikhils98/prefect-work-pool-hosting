@@ -114,15 +114,16 @@ class Ec2Instance:
         )
 
         # The instance that’ll run the server and worker processes.
-        # Since both are rather lightweight we can run them in a
-        # T4g.small instance. Of course if there are more internal users
-        # accessing the server or several workers we may need a bigger machine.
+        # Both services seem to run well in a Medium instance
+        # In my tests, a smaller instance results in system freezes with rdp.
+        # Of course if there are more internal users accessing
+        # the server or several workers we may need a bigger machine.
         ec2_config = config.require_object("ec2")
         ec2_name = prefix_name("ec2")
         self.instance = aws.ec2.Instance(
             ec2_name,
             tags={"Name": ec2_name},
-            instance_type=aws.ec2.InstanceType.T4G_SMALL,
+            instance_type=aws.ec2.InstanceType.T4G_MEDIUM,
             ami=ec2_config["ami_id"],
             key_name=ec2_config["key_pair"],
             user_data=user_data,

@@ -15,7 +15,7 @@ class WorkerEcsService:
         server: aws.ecs.Service,
     ):
         flow = "mean_and_median"
-        server_host = "http://localhost"
+        server_url = "http://localhost:4200/api"
 
         worker_name = prefix_name("worker")
 
@@ -31,7 +31,7 @@ class WorkerEcsService:
                         "name": worker_name,
                         "image": "prefecthq/prefect:2.20-python3.12",
                         "cpu": 128,
-                        "memory": 128,
+                        "memory": 256,
                         "command": [
                             "/bin/sh",
                             "-c",
@@ -40,7 +40,7 @@ class WorkerEcsService:
                         "environment": [
                             {
                                 "name": "PREFECT_API_URL",
-                                "value": f"{server_host}/api",
+                                "value": server_url,
                             },
                         ],
                     }

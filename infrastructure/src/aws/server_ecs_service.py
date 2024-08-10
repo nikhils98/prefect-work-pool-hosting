@@ -27,7 +27,7 @@ class ServerEcsService:
                         "name": server_name,
                         "image": "prefecthq/prefect:2.20-python3.12",
                         "cpu": 512,
-                        "memory": 512,
+                        "memory": 1024,
                         "portMappings": [
                             {"containerPort": 4200, "hostPort": 4200, "protocol": "tcp"}
                         ],
