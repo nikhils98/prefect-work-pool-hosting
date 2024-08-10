@@ -2,7 +2,7 @@ encryptionsalt: v1:s7tYNHBszmI=:v1:/O9w3MOY6BxtCfLR:9JzGDJfRSnpq4Jr5ybyhsVbEqh0O
 config:
   aws:region: me-south-1
   prefect-work-pool-hosting-demo:ec2:
-    key_pair: <key_pair>
-    ami_id: <ami_id>
-  prefect-work-pool-hosting-demo:public_subnet_id: <subnet_id>
-  prefect-work-pool-hosting-demo:vpc_id: <vpc_id>
+    key_pair: <Name of the key_pair to associate with the instance>
+    ami_id: <AMI id of the distro to use in the instance. I tested the project with ubuntu server 22 for arm. It can be found in AMI catalog in the AWS console>
+  prefect-work-pool-hosting-demo:public_subnet_id: <I used one of the public subnets of the default vpc. If you create a new vpc and subnets in the project, then this variable won't be required>
+  prefect-work-pool-hosting-demo:vpc_id: <I used the default vpc and copied its id here. If you create a new vpc in the project, then this variable won't be required>

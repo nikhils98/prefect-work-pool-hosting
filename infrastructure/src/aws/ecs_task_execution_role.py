@@ -9,7 +9,6 @@ from utils import prefix_name
 # broken down into more granular permissions
 # and perhaps not all 3 of the processes require the same
 # permissions at all so we’d have different roles in that case.
-# But for simplicity this is ok
 class EcsTaskExecutionRole:
     def __init__(self):
         role_name = prefix_name("ecs-task-execution-role")
