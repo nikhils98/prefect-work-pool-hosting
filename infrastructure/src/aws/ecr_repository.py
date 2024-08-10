@@ -4,6 +4,11 @@ import pulumi_aws as aws
 from utils import prefix_name
 
 
+# Note the repository name is simply prefix_name()
+# The idea here is that in future we may build and
+# deploy multiple flows and we can upload all of them
+# in the same repository, differentiating with tag
+# such as mean_and_median-latest
 class EcrRepository:
     def __init__(self) -> None:
         repo_name = prefix_name()

@@ -9,6 +9,8 @@ config = pulumi.Config()
 
 class Ec2Instance:
     def __init__(self, cluster_name: str, fargate_sg_id: pulumi.Output[str]):
+        # role with permissions to register and execute a Fargate task
+        # which will be needed by the worker process.
         assume_role_policy = {
             "Version": "2012-10-17",
             "Statement": [
@@ -47,7 +49,13 @@ class Ec2Instance:
             f"{role_name}-instance-profile", role=role.name
         )
 
-        # bash script to run when ec2 instance is being created
+        # Bash script that installs and runs the ecs-agent
+        # which is required in a non Amazon linux distro to register the
+        # EC2 instance in ECS. Without it ECS won’t be able to deploy
+        # containers in the instance.
+        # It also installs a desktop environment `xfce`
+        # which we’ll need to access the server UI via RDP.
+        # This script will only run when the instance is first initialized.
         user_data = f"""#!/bin/bash
           # Run update
           apt-get update
@@ -74,6 +82,10 @@ class Ec2Instance:
           snap install firefox
       """
 
+        # Note the ingress rules of the security group;
+        # it allows incoming traffic only from the fargate security group.
+        # This is needed to allow the flow process to be able to
+        # communicate with the server.
         sg_name = prefix_name("ec2-sg")
         self.security_group = aws.ec2.SecurityGroup(
             sg_name,
@@ -101,8 +113,11 @@ class Ec2Instance:
             ip_protocol="-1",
         )
 
+        # The instance that’ll run the server and worker processes.
+        # Since both are rather lightweight we can run them in a
+        # T4g.small instance. Of course if there are more internal users
+        # accessing the server or several workers we may need a bigger machine.
         ec2_config = config.require_object("ec2")
-
         ec2_name = prefix_name("ec2")
         self.instance = aws.ec2.Instance(
             ec2_name,
