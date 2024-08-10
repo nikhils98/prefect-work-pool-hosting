@@ -1,6 +1,8 @@
 import statistics
 from typing import List
 from prefect import flow, task
+from prefect.deployments import DeploymentImage
+import os
 
 
 @task
@@ -24,4 +26,16 @@ def mean_and_median():
 
 
 if __name__ == "__main__":
-    mean_and_median.serve(name="deployment", cron="* * * * *")
+    name = "mean_and_median"
+    mean_and_median.deploy(
+        name=name,
+        work_pool_name=name,
+        image=DeploymentImage(
+            name=os.environ.get("AWS_ECR_REPOSITORY"),
+            tag=f"{name}-latest",
+            dockerfile="./Dockerfile",
+        ),
+        push=False,
+        build=False,
+        cron="*/5 * * * *",  # Every 5 mins
+    )

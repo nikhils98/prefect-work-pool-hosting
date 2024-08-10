@@ -1,0 +1,68 @@
+name: Build image, push to ECR and deploy flow to prefect server
+
+on:
+  push:
+    paths-ignore:
+      - 'infrastructure/**'
+    branches:
+      - main
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+env:
+  AWS_ECR_REPOSITORY: ${{ vars.AWS_ECR_REPOSITORY }}
+  AWS_ROLE: ${{ vars.AWS_ROLE }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: dev
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: me-south-1
+          role-to-assume: ${{ env.AWS_ROLE }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to ECR 
+        id: build-image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ env.AWS_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:mean_and_median-latest .
+          docker push $REGISTRY/$REPOSITORY --all-tags
+          echo $IMAGE_TAB
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    environment: dev
+    timeout-minutes: 10
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: me-south-1
+          role-to-assume: ${{ env.AWS_ROLE }}
+      - name: Run deployment Fargate task and wait for its completion
+        run: |
+          TASK_ID=$(aws ecs run-task \
+          --cluster ${{ vars.AWS_ECS_CLUSTER }} \
+          --task-definition ${{ vars.AWS_ECS_TASK_DEF }} \
+          --count 1 \
+          --launch-type FARGATE \
+          --network-configuration "${{ vars.AWS_ECS_NETWORK_CONFIG }}" \
+          | jq -r '.tasks[0].taskArn') \
+          && aws ecs wait tasks-stopped --cluster ${{ vars.AWS_ECS_CLUSTER }} --tasks $TASK_ID

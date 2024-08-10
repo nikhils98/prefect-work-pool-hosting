@@ -4,10 +4,10 @@ import pulumi_aws as aws
 from utils import prefix_name
 
 
-# This is the role that we’ll assign to server, worker
-# as well as the flow process. Ideally this can be
+# This is the role that we’ll assign to server, worker, flow processes
+# as well as the deployment task. Ideally this can be
 # broken down into more granular permissions
-# and perhaps not all 3 of the processes require the same
+# and perhaps not all 4 of the processes require the same
 # permissions at all so we’d have different roles in that case.
 class EcsTaskExecutionRole:
     def __init__(self):
