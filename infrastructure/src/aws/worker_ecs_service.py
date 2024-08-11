@@ -15,7 +15,7 @@ class WorkerEcsService:
         server: aws.ecs.Service,
     ):
         flow = "mean_and_median"
-        server_url = "http://localhost:4200/api"
+        server_url = "http://localhost/api"
 
         worker_name = prefix_name("worker")
 

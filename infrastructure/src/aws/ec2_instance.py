@@ -53,8 +53,16 @@ class Ec2Instance:
         # which is required in a non Amazon linux distro to register the
         # EC2 instance in ECS. Without it ECS won’t be able to deploy
         # containers in the instance.
+
         # It also installs a desktop environment `xfce`
         # which we’ll need to access the server UI via RDP.
+
+        # It also installs nginx which is needed for the Fargate
+        # containers to connect to the server via EC2's private IP.
+        # The prefect server by default has been set to listen to
+        # 0.0.0.0 which refers to localhost or 127.0.0.1 on host machine but
+        # it's unable to listen to the private IP hence the need for proxy.
+
         # This script will only run when the instance is first initialized.
         user_data = f"""#!/bin/bash
           # Run update
@@ -80,6 +88,24 @@ class Ec2Instance:
     
           # Install firefox
           snap install firefox
+
+          # Install nginx
+          apt install -y nginx
+
+          # Create site file to forward requests to prefect server
+          echo 'server {{
+                  listen 80 default_server;
+                  location / {{
+                          proxy_pass  http://127.0.0.1:4200;
+                  }}
+          }}' > /etc/nginx/sites-available/prefect
+          ln -s /etc/nginx/sites-available/prefect /etc/nginx/sites-enabled/
+
+          # Unlink current default server config
+          unlink /etc/nginx/sites-enabled/default
+
+          # Restart nginx
+          systemctl restart nginx
       """
 
         # Note the ingress rules of the security group;

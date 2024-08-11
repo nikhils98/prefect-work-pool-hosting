@@ -1,4 +1,4 @@
-[Accompanying guide](https://nikhils98.github.io/posts/self-host-prefect-server-with-ecs-work-pool)
+[Accompanying guide](https://nikhils98.github.io/posts/self-host-prefect-with-ecs-work-pool)
 
 # Project structure
 

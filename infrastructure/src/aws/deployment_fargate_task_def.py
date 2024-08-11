@@ -42,7 +42,7 @@ class DeploymentFargateTaskDef:
                             "environment": [
                                 {
                                     "name": "PREFECT_API_URL",
-                                    "value": f"http://{args[1]}:4200/api",
+                                    "value": f"http://{args[1]}/api",
                                 },
                                 {"name": "AWS_ECR_REPOSITORY", "value": args[0]},
                             ],
